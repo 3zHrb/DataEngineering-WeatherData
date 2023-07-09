@@ -9,12 +9,21 @@
 <body>
     <h1>Weather Data</h1>
     <div>
-        <form>
-            <input type="text" placeholder="Enter City">
-            <input type="button" value="Add More City">
-            <input type="submit" value="Submit">
+        <form class="submiteCitiesForm" method="post" action="{{ url_for('userSubmitCities') }}">
+            <input class="citiesInputClass" type="text" name="citiesInput" placeholder="Enter City">
+            <input type="button" value="Add More City" onclick="appendedCities()">
+            <input class="submitButton" type="submit" value="Submit" onclick="submitCities()">
         </form>
+        <!-- <button value="Submit" style="visibility: hidden;" class="submitButton" onclick="submitForm()"> -->
     </div>
+    <ul id="ul-OfCities" style="list-style-type: none;">
+
+    </ul>
+    <button class="deleteCitybutton" onclick="deleteCity()" , style="visibility: hidden;">Delete</button>
+    <h4 class="cities_limit_exceeded" style="color:red;"></h4>
+    {% if submitedCities %}
+    <h3>{{ submitedCities }}</h3>
+    {% endif %}
 
 
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -43,9 +52,100 @@
 
             chart.draw(data, google.charts.Bar.convertOptions(options));
         }
+
+        var arrayOfCities = []
+
+        function appendedCities() {
+            var aceededLimitLabel = document.querySelector('.cities_limit_exceeded');
+            var submitbutton = document.querySelector('.submitButton');
+            if (arrayOfCities.length < 5) {
+                submitbutton.style.visibility = "visible";
+                aceededLimitLabel.style.visibility = "hidden";
+                arrayOfCities.push(document.querySelector('.citiesInputClass').value);
+                document.querySelector('.citiesInputClass').value = '';
+                var ul = document.getElementById('ul-OfCities');
+
+                var li = document.createElement('li');
+                var liText = document.createTextNode(arrayOfCities[arrayOfCities.length - 1]);
+                li.style.display = 'inline-block';
+                li.style.marginLeft = '8px';
+                li.style.backgroundColor = 'lightblue';
+                li.style.padding = '4px';
+                li.style.borderRadius = '2px';
+                li.addEventListener('click', citySelected);
+                li.setAttribute('id', `${arrayOfCities[arrayOfCities.length - 1]}`)
+
+                li.appendChild(liText);
+                ul.appendChild(li);
+            } else {
+                submitbutton.style.visibility = 'hidden';
+                aceededLimitLabel.style.visibility = "visible";
+                aceededLimitLabel.textContent = 'number of cities should be below 5, Select city to delete';
+            }
+
+
+        }
+
+        var arrayCitiesToDeleted = [];
+        function citySelected() {
+
+            if (this.style.backgroundColor == 'lightblue') {
+                this.style.backgroundColor = 'red';
+                arrayCitiesToDeleted.push(this.textContent);
+                // console.log(arrayCitiesToDeleted);
+            } else {
+                this.style.backgroundColor = 'lightblue';
+                var indexOfElement = arrayCitiesToDeleted.indexOf(this.textContent);
+                arrayCitiesToDeleted.splice(indexOfElement, 1)
+                // console.log(arrayCitiesToDeleted)
+            }
+
+            var deleteButton = document.querySelector('.deleteCitybutton')
+            if (arrayCitiesToDeleted.length > 0) {
+                deleteButton.style.visibility = 'visible';
+            }
+        }
+
+        function deleteCity() {
+            console.log(arrayCitiesToDeleted);
+            arrayOfCities = arrayOfCities.filter(item => !arrayCitiesToDeleted.includes(item));
+            for (i = 0; i < arrayCitiesToDeleted.length; i++) {
+                console.log(`current i: ${i}`);
+                var elementToDelete = document.querySelector(`#${arrayCitiesToDeleted[i]}`);
+                elementToDelete.remove();
+            }
+
+            arrayCitiesToDeleted = [];
+            document.querySelector('.cities_limit_exceeded').style.visibility = 'hidden';
+
+        }
+
+        // document.addEventListener('DOMContentLoaded', function () {
+        //     console.log('page just loaded');
+        // });
+
+        // function submitForm() {
+        //     console.log('submitForm is triggered');
+        //     document.querySelector('.submiteCitiesForm').addEventListener('submit', function (e) {
+        //         e.preventDefault();
+
+        //         var form = e.target;
+        //         var citiesInput = form.querySelector('input[name="citiesInput"]');
+        //         citiesInput.value = JSON.stringify(arrayOfCities);
+
+        //         form.submit();
+        //     });
+        // }
+        function submitCities() {
+            var citiesInput = document.querySelector('.citiesInputClass');
+            citiesInput.value = arrayOfCities;
+        }
+
     </script>
 
+    {% if fileName %}
     <div id="barchart_material" style="width: 900px; height: 500px;"></div>
+    {% endif %}
 
 
 </body>

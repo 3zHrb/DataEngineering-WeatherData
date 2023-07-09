@@ -29,3 +29,4 @@ def loadData(df):
         Filename="weatherData_at_{}.csv".format(now),
         Key="weatherData_s3_at_{}.csv".format(now),
     )
+    return "weatherData_s3_at_{}.csv".format(now)
