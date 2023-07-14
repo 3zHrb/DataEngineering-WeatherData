@@ -8,7 +8,7 @@ producer = KafkaProducer(
     value_serializer=lambda x: str(x).encode("utf-8"),
 )
 
-arrayOfCities = ["Boston", "Tokyo"]
+arrayOfCities = ["Jeddah", "Riyadh", "San Francisco", "Los Angeles", "Dubai"]
 
 
 def kafkaProducer():

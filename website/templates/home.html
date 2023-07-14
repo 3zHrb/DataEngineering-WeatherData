@@ -7,12 +7,13 @@
 </head>
 
 <body>
+    <h4 style="opacity: 0.7;">This website was built by: Abdulaziz Alharbi</h4>
     <h1>Weather Data</h1>
     <div>
         <form class="submiteCitiesForm" method="post" action="{{ url_for('userSubmitCities') }}">
-            <input class="citiesInputClass" type="text" name="citiesInput" placeholder="Enter City">
-            <input type="button" value="Add More City" onclick="appendedCities()">
-            <input class="submitButton" type="submit" value="Submit" onclick="submitCities()">
+            <!-- <input class="citiesInputClass" type="text" name="citiesInput" placeholder="Enter City">
+            <input class="button-34" type="button" value="Add More City" onclick="appendedCities()"> -->
+            <input class="submitButton button-34" type="submit" value="Get Weather Data" onclick="submitCities()">
         </form>
         <!-- <button value="Submit" style="visibility: hidden;" class="submitButton" onclick="submitForm()"> -->
     </div>
@@ -31,19 +32,51 @@
         google.charts.load('current', { 'packages': ['bar'] });
         google.charts.setOnLoadCallback(drawChart);
 
+        function arrayTransformation() {
+            var data = '{{ data }}'.split(',');
+            // console.log(data)
+            var unescapedData = [];
+            for (var i = 0; i < data.length; i++) {
+                newData = data[i].replace("[[&#39;", "");
+                newData = newData.replace("&#39;", "");
+                newData = newData.replace(" ", "");
+                newData = newData.replace("[", '')
+                newData = newData.replace(']]', '');
+                newData = newData.replace(']', '');
+                newData = newData.replace('&#39;', '')
+
+                unescapedData.push(newData)
+            }
+            // console.log(unescapedData);
+
+            arrayOfDataGraph = [['Cities', 'Temperature', 'Humidity']];
+            for (var i = 0; i < unescapedData.length; i += 4) {
+                arrayOfDataGraph.push(unescapedData.slice(i, i + 4));
+            }
+
+
+            for (var i = 1; i < arrayOfDataGraph.length; i++) {
+                for (var j = 1; j < arrayOfDataGraph[i].length; j++) {
+                    if (!isNaN(parseFloat(arrayOfDataGraph[i][j])) && (j != (arrayOfDataGraph[i].length - 1))) {
+                        arrayOfDataGraph[i][j] = parseFloat(arrayOfDataGraph[i][j]);
+                    } else if ((j == (arrayOfDataGraph[i].length - 1))) {
+                        arrayOfDataGraph[i] = arrayOfDataGraph[i].slice(0, arrayOfDataGraph[i].length - 1)
+                    }
+                }
+            }
+
+            return arrayOfDataGraph;
+
+        }
+
+        console.log(arrayTransformation())
         function drawChart() {
-            var data = google.visualization.arrayToDataTable([
-                ['Cities', 'Temprature'],
-                ['Tokyo', 1000],
-                ['NewYork', 1170]
-                // ['2016', 660, 1120, 300],
-                // ['2017', 1030, 540, 350]
-            ]);
+            var data = google.visualization.arrayToDataTable(arrayTransformation());
 
             var options = {
                 chart: {
-                    title: 'Company Performance',
-                    subtitle: 'Sales, Expenses, and Profit: 2014-2017',
+                    title: 'Weather Data',
+                    subtitle: 'Temperature, and Humidity',
                 },
                 bars: 'vertical' // Required for Material Bar Charts.
             };
@@ -143,10 +176,12 @@
 
     </script>
 
-    {% if fileName %}
-    <div id="barchart_material" style="width: 900px; height: 500px;"></div>
-    {% endif %}
-
+    <div class="container">
+        {% if status %}
+        <div id="barchart_material" style="width: 900px; height: 500px; visibility: visible;"></div>
+        {{ dataframe.to_html() | safe}}
+        {% endif %}
+    </div>
 
 </body>
 
@@ -155,12 +190,89 @@
 <style>
     body {
         text-align: center;
+        font-family: Helvetica;
     }
 
-    #barchart_material {
+    h1 {
+        text-shadow: #5E5DF0 0 10px 20px -10px;
+        opacity: 0.7;
+    }
+
+    /* #barchart_material {
         text-align: center;
         width: 50%;
         margin-left: 30%;
         margin-top: 10%;
+    } */
+
+    .container {
+        display: flex;
+
+        padding: 5%;
+        border-radius: 10px;
+
+    }
+
+    table,
+    #barchart_material {
+        flex: 1;
+        background-color: #FAF9F6;
+    }
+
+    #barchart_material {
+        margin-left: 10%;
+    }
+
+
+    /* CSS */
+    .button-34 {
+        background: #5E5DF0;
+        border-radius: 999px;
+        box-shadow: #5E5DF0 0 10px 20px -10px;
+        box-sizing: border-box;
+        color: #FFFFFF;
+        cursor: pointer;
+        font-family: Inter, Helvetica, "Apple Color Emoji", "Segoe UI Emoji", NotoColorEmoji, "Noto Color Emoji", "Segoe UI Symbol", "Android Emoji", EmojiSymbols, -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", sans-serif;
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 24px;
+        opacity: 1;
+        outline: 0 solid transparent;
+        padding: 8px 18px;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
+        width: fit-content;
+        word-break: break-word;
+        border: 0;
+        margin-left: 20px;
+    }
+
+    .citiesInputClass {
+        padding: 10px;
+        border-color: #5E5DF0;
+        border-radius: 5px;
+        box-shadow: #5E5DF0 0 10px 20px -10px;
+    }
+
+    ::placeholder {
+        /* Most modern browsers support this now. */
+        color: #5E5DF0;
+        opacity: 0.5;
+    }
+
+    table {
+        border-collapse: collapse;
+        margin-left: 10%;
+    }
+
+    th {
+        background-color: white;
+        text-align: center;
+        /* color: #5E5DF0; */
+    }
+
+    td {
+        color: black;
     }
 </style>

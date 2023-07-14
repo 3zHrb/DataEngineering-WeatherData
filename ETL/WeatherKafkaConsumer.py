@@ -15,7 +15,6 @@ def kafkaConsumer():
     for index, messages in enumerate(consumerData):
         df = transformData(messages=messages)
         s3FileName = load.loadData(df)
-        requests.post("http://127.0.0.1:5000/getCurrentfile", data=s3FileName)
 
 
 kafkaConsumer()

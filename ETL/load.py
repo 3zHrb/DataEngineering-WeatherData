@@ -17,16 +17,15 @@ currentPath = os.getcwd()
 
 def loadData(df):
 
-    files = os.listdir(currentPath)
+    files = os.listdir(f"{currentPath}/csvFile")
     for file in files:
-        if file.startswith("weather") and file.endswith(".csv"):
-            os.remove(f"{currentPath}/{file}")
+        if file.startswith("weatherData") and file.endswith(".csv"):
+            os.remove(f"{currentPath}/csvFile/{file}")
 
     now = datetime.datetime.now()
-    df.to_csv("weatherData_at_{}.csv".format(now))
+    df.to_csv("csvFile/weatherData_at_{}.csv".format(now))
     print(df)
     s3.Bucket("weatherdata-project").upload_file(
-        Filename="weatherData_at_{}.csv".format(now),
+        Filename="csvFile/weatherData_at_{}.csv".format(now),
         Key="weatherData_s3_at_{}.csv".format(now),
     )
-    return "weatherData_s3_at_{}.csv".format(now)
