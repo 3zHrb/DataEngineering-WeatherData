@@ -70,7 +70,7 @@
         }
 
         console.log(arrayTransformation())
-        function drawChart() {
+        async function drawChart() {
             var data = google.visualization.arrayToDataTable(arrayTransformation());
 
             var options = {
@@ -84,6 +84,9 @@
             var chart = new google.charts.Bar(document.getElementById('barchart_material'));
 
             chart.draw(data, google.charts.Bar.convertOptions(options));
+            // var form = document.getElementById("MyForm");
+            // form.submit();
+
         }
 
         var arrayOfCities = []
@@ -115,7 +118,6 @@
                 aceededLimitLabel.style.visibility = "visible";
                 aceededLimitLabel.textContent = 'number of cities should be below 5, Select city to delete';
             }
-
 
         }
 
@@ -157,18 +159,18 @@
         //     console.log('page just loaded');
         // });
 
-        // function submitForm() {
-        //     console.log('submitForm is triggered');
-        //     document.querySelector('.submiteCitiesForm').addEventListener('submit', function (e) {
-        //         e.preventDefault();
+        function submitForm() {
+            console.log('submitForm is triggered');
+            document.querySelector('.submiteCitiesForm').addEventListener('submit', function (e) {
+                e.preventDefault();
 
-        //         var form = e.target;
-        //         var citiesInput = form.querySelector('input[name="citiesInput"]');
-        //         citiesInput.value = JSON.stringify(arrayOfCities);
+                var form = e.target;
+                // var citiesInput = form.querySelector('input[name="citiesInput"]');
+                // citiesInput.value = JSON.stringify(arrayOfCities);
 
-        //         form.submit();
-        //     });
-        // }
+                form.submit();
+            });
+        }
         function submitCities() {
             var citiesInput = document.querySelector('.citiesInputClass');
             citiesInput.value = arrayOfCities;
@@ -183,6 +185,10 @@
         {% endif %}
     </div>
 
+    <div class="diagram">
+        <h3 style="color: white;">Project diagram was designed using diagram.py library</h3>
+        <img src="{{url_for('static', filename='weather_data.png')}}" style="width: 80%">
+    </div>
 </body>
 
 </html>
@@ -191,6 +197,7 @@
     body {
         text-align: center;
         font-family: Helvetica;
+        padding: 0;
     }
 
     h1 {
@@ -204,6 +211,21 @@
         margin-left: 30%;
         margin-top: 10%;
     } */
+
+    .diagram {
+        background-color: red;
+        width: 50%;
+        padding: 20px;
+        border-radius: 20px;
+        background-color: #5E5DF0;
+        box-shadow: #5E5DF0 0 10px 20px -10px;
+        margin: 0;
+        margin-left: 25%;
+    }
+
+    img {
+        border-radius: 10px;
+    }
 
     .container {
         display: flex;

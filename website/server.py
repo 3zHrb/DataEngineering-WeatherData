@@ -1,4 +1,7 @@
 from flask import Flask, request, render_template, url_for
+
+from time import sleep
+
 import subprocess
 
 import numpy as np
@@ -34,22 +37,44 @@ def home():
 @app.route("/userSubmitCities", methods=["POST"])
 def userSubmitCities():
 
-    get_last_modified = lambda obj: int(obj["LastModified"].strftime("%s"))
 
-    s3 = boto3.client("s3")
-    objs = s3.list_objects_v2(Bucket="weatherdata-project")["Contents"]
-    last_added = [
-        obj["Key"] for obj in sorted(objs, key=get_last_modified, reverse=True)
-    ][0]
-    print(f"last_added: {last_added}")
-    df = wr.s3.read_csv(f"s3://weatherdata-project/{last_added}")
-    df.drop(columns=["Unnamed: 0", "TimeZone"], inplace=True)
-    arrayOfRows = []
-    for index, row in df.iterrows():
-        arrayOfRows.append(row.values)
+        print("Server: userSubmitCities executed")
+        get_last_modified = lambda obj: int(obj["LastModified"].strftime("%s"))
 
-    listOfData = [arr.tolist() for arr in arrayOfRows]
-    return render_template("home.html", status=True, dataframe=df, data=listOfData)
+        s3 = boto3.client("s3")
+        objs = s3.list_objects_v2(Bucket="weatherdata-project")["Contents"]
+        last_added = [
+            obj["Key"] for obj in sorted(objs, key=get_last_modified, reverse=True)
+        ][0]
+        print(f"last_added: {last_added}")
+        df = wr.s3.read_csv(f"s3://weatherdata-project/{last_added}")
+        df.drop(columns=["Unnamed: 0", "TimeZone"], inplace=True)
+        arrayOfRows = []
+        for index, row in df.iterrows():
+            arrayOfRows.append(row.values)
+
+        listOfData = [arr.tolist() for arr in arrayOfRows]
+        return render_template("home.html", status=True, dataframe=df, data=listOfData)
+
+
+# @app.route("weather")
+# def weatherDataSchedular():
+#     get_last_modified = lambda obj: int(obj["LastModified"].strftime("%s"))
+
+#     s3 = boto3.client("s3")
+#     objs = s3.list_objects_v2(Bucket="weatherdata-project")["Contents"]
+#     last_added = [
+#         obj["Key"] for obj in sorted(objs, key=get_last_modified, reverse=True)
+#     ][0]
+#     print(f"last_added: {last_added}")
+#     df = wr.s3.read_csv(f"s3://weatherdata-project/{last_added}")
+#     df.drop(columns=["Unnamed: 0", "TimeZone"], inplace=True)
+#     arrayOfRows = []
+#     for index, row in df.iterrows():
+#         arrayOfRows.append(row.values)
+
+#     listOfData = [arr.tolist() for arr in arrayOfRows]
+#     return render_template("home.html", status=True, dataframe=df, data=listOfData)
 
 
 if __name__ == "__main__":
